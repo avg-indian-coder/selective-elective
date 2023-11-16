@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin: 20px">
+            {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% else %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin: 20px">
+            {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> 
+        </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+<br/>
+<br/>
+<br/>
+<style>
+    .cont {
+        vertical-align: middle;
+        max-width: 400px;
+        min-width: 300px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    label {
+        display: block;
+        margin-top: 10px;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    .butt {
+        width: 100%;
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    #errorMessage {
+        color: red;
+        text-align: center;
+    }
+
+    p {
+        text-align: center;
+    }
+</style>
+
+<div class='container cont'>
+    <h1>Admin Login</h1>
+    <form id="loginForm" method='POST' action="{% url 'administrator:login' %}">
+        {% csrf_token %}
+        <label for="SRN">Username:</label>
+        <input type="text" id="SRN" name="SRN" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button class="butt" type="submit" id="loginButton">Login</button>
+    </form>
+    <br/>
+
+    <p><a href="{% url 'home' %}">Go to student login</a></p>
+</div>
+<br/>
+{% endblock %}

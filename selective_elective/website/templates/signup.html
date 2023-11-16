@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin: 20px">
+            {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% else %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin: 20px">
+            {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> 
+        </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+<br/>
+<br/>
+<br/>
+
+<style>
+    .cont {
+        max-width: 400px;
+        min-width: 350px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    label {
+        display: block;
+        margin-top: 10px;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    button {
+        width: 100%;
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    #errorMessage {
+        color: red;
+        text-align: center;
+    }
+
+    p {
+        text-align: center;
+    }
+</style>
+<div class="container cont">
+    <h1>Sign Up</h1>
+    <form id="signupForm" method='POST' action="{% url 'register' %}">
+        {% csrf_token %}
+        <label for="SRN">SRN:</label>
+        <input type="text" id="SRN" name="SRN" required>
+
+        <label for="SRN">First Name:</label>
+        <input type="text" id="first_name" name="first_name" required>
+
+        <label for="SRN">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" required>
+
+        <label for="SRN">GPA:</label>
+        <input type="text" id="GPA" name="GPA" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+        <button type="submit" id="signupButton">Sign Up</button>
+    </form>
+    <p id="errorMessage"></p>
+    <p>
+        Already have an account? <a href="{% url 'home' %}">Login</a>
+    </p>
+</div>
+<br/>
+{% endblock %}

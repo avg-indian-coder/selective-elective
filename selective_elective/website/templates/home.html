@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin: 20px">
+            {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% else %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin: 20px">
+            {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> 
+        </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+<br/>
+<br/>
+<br/>
+<style>
+    .cont {
+        max-width: 400px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .align {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    label {
+        display: block;
+        margin-top: 10px;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        margin-right: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    select {
+        width: 100%;
+        padding: 5px;
+        margin-top: 5px;
+        margin-right: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    select {
+        height: 40px;
+    }
+
+    button {
+        width: 100%;
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+<div class='container'>
+    <div class="row">
+        {% comment %} <div class="col"> {% endcomment %}
+        {% if student.EF1 %}
+            <div class="align card text-bg-success mb-4" style="max-width: 18rem;">
+                <div class="card-header text-bg-success">Elective 1</div>
+                <div class="card-body">
+                <h5 class="card-title">{{student.EF1.E_id.name}}</h5>
+                <p class="card-text">{{student.EF1.F_id.first_name}} {{student.EF1.F_id.last_name}}</p>
+                </div>
+            </div>  
+        {% else %}
+            <div class="align card text-bg-warning mb-4" style="max-width: 18rem;">
+                <div class="card-header text-bg-warning">Elective 1</div>
+                <div class="card-body">
+                <h5 class="card-title">Not yet selected</h5>
+                <p class="card-text">Not yet selected</p>
+                </div>
+            </div>  
+        {% endif %}
+        {% comment %} <div/> {% endcomment %}
+
+        {% comment %} <div class="col"> {% endcomment %}
+            {% if student.EF2 %}
+                <div class="align card text-bg-success mb-4" style="max-width: 18rem;">
+                    <div class="card-header text-bg-success">Elective 2</div>
+                    <div class="card-body">
+                    <h5 class="card-title">{{student.EF2.E_id.name}}</h5>
+                    <p class="card-text">{{student.EF2.F_id.first_name}} {{student.EF2.F_id.last_name}}</p>
+                    </div>
+                </div>  
+            {% else %}
+                <div class="align card text-bg-warning mb-4" style="max-width: 18rem;">
+                    <div class="card-header text-bg-warning">Elective 2</div>
+                    <div class="card-body">
+                    <h5 class="card-title">Not yet selected</h5>
+                    <p class="card-text">Not yet selected</p>
+                    </div>
+                </div>  
+            {% endif %}
+        {% comment %} <div/> {% endcomment %}
+    </div>
+</div>
+<br/>
+<br/>
+<div class='container cont'>
+    <h1>Elective Registration</h1>
+    <form method='POST' action="{% url 'store'%}">
+        {% csrf_token %}
+        {% comment %} <label for="rollNumber">Roll Number:</label>
+        <input type="text" id="rollNumber" name="rollNumber" required>
+
+        <label for="classRoom">Class Room:</label>
+        <input type="text" id="classRoom" name="classRoom" required> {% endcomment %}
+
+        <label for="E1">Choose Elective 1:</label>
+        <select id="E1" name="E1">
+            <div class="container">
+                {% if not elective1 %}
+                    <option value="">Loading elective subjects...</option>
+                {% else %}
+                    <option value="%_%">Choose Elective</option>
+                    {% for elec in elective1 %}
+                        <option value="{{elec.E_id}}_{{elec.F_id}}">{{elec.E_name}} - {{elec.F_fname}} {{elec.F_lname}}</option>
+                    {% endfor %}
+                {% endif %}
+            <div/>
+        </select>
+        {% comment %} <div class="container">
+            {% for e in elective1 %}
+                    <select id="E1" name="E1">
+                            {% if not elective1 %}
+                                <option value="">Loading elective subjects...</option>
+                            {% else %}
+                                {% for elec in elective1 %}
+                                    <option value="{{elec.E_id}}_{{elec.F_id}}">{{elec.E_name}} - {{elec.F_fname}} {{elec.F_lname}}</option>
+                                {% endfor %}
+                            {% endif %}
+                    </select>
+            {% endfor %}
+        </div> {% endcomment %}
+
+        <label for="E2">Choose Elective 2:</label>
+        <select id="E2" name="E2">
+            <div class="container">
+                {% if not elective2 %}
+                    <option value="">Loading elective subjects...</option>
+                {% else %}
+                    <option value="%_%">Choose Elective</option>
+                    {% for elec in elective2 %}
+                        <option value="{{elec.E_id}}_{{elec.F_id}}">{{elec.E_name}} - {{elec.F_fname}} {{elec.F_lname}}</option>
+                    {% endfor %}
+                {% endif %}
+            <div/>
+        </select>
+        <br/>
+        <br/>
+
+        <button type="submit" id="registerButton">Confirm Registration</button>
+        <p id="errorMessage" style="color: red; text-align: center;"></p>
+    </form>
+</div>
+<br/>
+{% endblock %}
