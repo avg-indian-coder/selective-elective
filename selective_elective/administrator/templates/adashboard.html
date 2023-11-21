@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .cont {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .dropdown-container {
+        width: 40%;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        margin-bottom: 20px;
+    }
+
+    .table-container {
+        width: 40%;
+        padding: 20px;
+        margin-left: auto;
+        margin-right: auto;
+        {% comment %} display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between; {% endcomment %}
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: center;
+    }
+
+    th {
+        background-color: #007BFF;
+        color: #fff;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .butt {
+        width: 100%;
+        margin-left: 500px;   
+        margin-right: 500px;
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+<br/>
+<h1 style="text-align: center;">Elective Dashboard</h1>
+<br/>
+<form method="POST" action="{% url 'administrator:dashboard' %}">
+    {% csrf_token %}
+<div class="container cont">
+    <!-- Dropdown Box 1 -->
+        <div class="dropdown-container">
+            {% if not e1m %}
+                <h2>Elective 1</h2>
+            {% else %}
+                <h2>{{e1m.0.E_id.name}}</h2>
+            {% endif %}
+            <select id="E1" name="E1">
+                <option value="%">Choose Elective</option>
+                {% for e in e1s %}
+                    <option value="{{e.E_id}}">{{e.name}}</option>
+                {% endfor %}
+            </select>
+            <table id="table1">
+                <thead>
+                    <tr>
+                        <th>Faculty</th>
+                        <th>Student Count</th>
+                        <th>Room</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        {% if not e1m %}
+                        <tr>
+                            <td>Data 1</td>
+                            <td>Data 2</td>
+                            <td>Data 3</td>
+                        </tr>
+                        {% else %}
+                            {% for e in e1m %}
+                            <tr>
+                                <td>{{e.F_id.first_name}} {{e.F_id.last_name}}</td>
+                                <td>{{e.student_no}}</td>
+                                <td>{{e.room_no.room_no}}</td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Dropdown Box 2 -->
+        <div class="dropdown-container">
+            {% if not e2m %}
+                <h2>Elective 2</h2>
+            {% else %}
+                <h2>{{e2m.0.E_id.name}}</h2>
+            {% endif %}
+            <select id="E2" name="E2">
+                <option value="%">Choose Elective</option>
+                {% for e in e2s %}
+                    <option value="{{e.E_id}}">{{e.name}}</option>
+                {% endfor %}
+            </select>
+            <table id="table2">
+                <thead>
+                    <tr>
+                        <th>Faculty</th>
+                        <th>Student Count</th>
+                        <th>Room</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if not e2m %}
+                        <tr>
+                            <td>Data 1</td>
+                            <td>Data 2</td>
+                            <td>Data 3</td>
+                        </tr>
+                        {% else %}
+                            {% for e in e2m %}
+                            <tr>
+                                <td>{{e.F_id.first_name}} {{e.F_id.last_name}}</td>
+                                <td>{{e.student_no}}</td>
+                                <td>{{e.room_no.room_no}}</td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                </tbody>
+            </table>
+        </div>
+</div>
+<div class="container cont">
+    <button class="butt" type="submit" id="loginButton">Select</button>
+</div>
+</form>
+<hr/>
+<form method='POST' action="{% url 'administrator:allocate' %}">
+    {% csrf_token %}
+    <div class="container cont">
+        <button class="butt" type="submit" id="loginButton">Allocate Rooms</button>
+    </div>
+</form>
+<hr/>
+<form method='POST' action="{% url 'administrator:naughty' %}">
+    {% csrf_token %}
+    <div class="container cont">
+        <button class="butt" type="submit" id="loginButton">Find Naughty Students</button>
+    </div>
+</form>
+
+<div class="container cont">
+    <div class="table-container">
+        <!-- Table 1 -->
+        <div class="table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Naughty Students</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in naughty %}
+                        <tr>
+                            <td>{{student.first_name}} {{student.last_name}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

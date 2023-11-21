@@ -30,6 +30,12 @@ def dashboard(request):
             student_data = models.Student.objects.get(SRN=request.user)
             electives_data_1 = helpers.dashboard_context(elective=1)
             electives_data_2 = helpers.dashboard_context(elective=2)
+            print(request.user.username)
+            """ student_data = models.Student.objects.raw(f'''
+                select * from website_Student
+                where SRN='{request.user.username}'
+            ''') """
+            print(student_data)
             context = {
                 'student': student_data,
                 'elective1': electives_data_1,
@@ -38,7 +44,8 @@ def dashboard(request):
             return render(request, 'home.html', context)
         else:
             return redirect('home')
-    except:
+    except Exception as e:
+        print(e)
         return redirect('logout')
 
 def store(request):
