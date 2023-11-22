@@ -181,7 +181,11 @@
         <br/>
 
         <button type="submit" id="registerButton">Confirm Registration</button>
-        <p id="errorMessage" style="color: red; text-align: center;"></p>
+    </form>
+    <form method='POST' action="{% url 'clear' %}">
+        <br/>
+        {% csrf_token %}
+        <button type="submit" id="registerButton">Clear Choices</button>
     </form>
 </div>
 <br/>

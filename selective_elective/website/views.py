@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from . import models
 from . import helpers
+from django.db import connection
 
 # Create your views here.
 def home(request):
@@ -27,15 +28,16 @@ def home(request):
 def dashboard(request):
     try:
         if request.user.is_authenticated:
-            student_data = models.Student.objects.get(SRN=request.user)
             electives_data_1 = helpers.dashboard_context(elective=1)
             electives_data_2 = helpers.dashboard_context(elective=2)
-            print(request.user.username)
-            """ student_data = models.Student.objects.raw(f'''
-                select * from website_Student
-                where SRN='{request.user.username}'
-            ''') """
-            print(student_data)
+            #print(request.user.username)
+            with connection.cursor() as cursor:
+                cursor.execute(f'''
+                    select * from website_Student
+                    where SRN='{request.user.username}'
+                ''')
+                student_data = cursor.fetchone()
+            student_data = models.Student.objects.get(SRN=request.user)
             context = {
                 'student': student_data,
                 'elective1': electives_data_1,
@@ -61,6 +63,14 @@ def store(request):
             messages.error(request, "Choose a subject for elective 2")
             return redirect("dashboard")
         e1_e, e1_f, e2_e, e2_f = int(e1_e), int(e1_f), int(e2_e), int(e2_f)
+        with connection.cursor() as cursor:
+            cursor.execute(f"select * from website_ElectiveTeachingFaculty as ef where ef.E_id_id={e1_e} and ef.F_id_id={e1_f}")
+            ef1 = cursor.fetchall()
+            cursor.execute(f"select * from website_ElectiveTeachingFaculty as ef where ef.E_id_id={e2_e} and ef.F_id_id={e2_f}")
+            ef2 = cursor.fetchall()
+            cursor.execute(f"select * from website_Student where website_Student.SRN='{request.user}'")
+            student = cursor.fetchall()
+        print(ef1, ef2, student)
         ef1 = models.ElectiveTeachingFaculty.objects.get(E_id=e1_e, F_id=e1_f)
         ef2 = models.ElectiveTeachingFaculty.objects.get(E_id=e2_e, F_id=e2_f)
         student = models.Student.objects.get(SRN=request.user)
@@ -104,8 +114,10 @@ def register_user(request):
         for i in password:
             if not i.isalpha():
                 count_spec += 1
-        
-        if User.objects.filter(username=SRN).exists():
+        with connection.cursor() as cursor:
+            cursor.execute(f"select * from auth_user as u where u.username='{SRN}'")
+            user = cursor.fetchall()
+        if User.objects.filter(username=SRN).exists() or len(user) > 0:
             messages.error(request, "User already exists")
             return redirect('register')
         elif password != c_password:
@@ -130,6 +142,14 @@ def register_user(request):
             return redirect('home')
         
     return render(request, 'signup.html', {})
+
+def clear(request):
+    if request.method == 'POST':
+        student = models.Student.objects.get(SRN=request.user)
+        student.EF1 = None
+        student.EF2 = None
+        student.save()
+        return redirect('dashboard')
 
 def reset_db(request):
     helpers.init_db()

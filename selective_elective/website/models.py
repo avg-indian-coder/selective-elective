@@ -16,7 +16,7 @@ class Room(models.Model):
     room_no = models.CharField(primary_key=True, max_length=10)
     floor = models.IntegerField()
     capacity = models.IntegerField()
-    
+
 class ElectiveTeachingFaculty(models.Model):
     F_id = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     E_id = models.ForeignKey(Elective, on_delete=models.CASCADE)

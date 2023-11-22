@@ -1,11 +1,16 @@
 from . import models
 import re
+from django.db import connection
 
 def dashboard_context(elective):
-    EF = models.ElectiveTeachingFaculty.objects.all()
+    with connection.cursor() as cursor:
+        cursor.execute("select * from website_ElectiveTeachingFaculty")
+        EF = cursor.fetchall()
     #print(EF)
+    EF = models.ElectiveTeachingFaculty.objects.all()
     context = []
 
+    # you want EFs where elective is that only
     for ef in EF:
         if ef.E_id.E_type == elective:
             c = {
@@ -16,6 +21,11 @@ def dashboard_context(elective):
                 'F_lname': ef.F_id.last_name
             }
             context.append(c)
+   
+    with connection.cursor() as cursor:
+        cursor.execute(f"select * from (select * from website_electiveteachingfaculty as ef where ef.e_id_id={elective}) as efs join website_faculty as f on efs.F_id_id=f.F_id;")
+        out = cursor.fetchall()
+        #cprint(out)
 
     context.sort(key=lambda x: x['E_name'])
 
@@ -35,6 +45,9 @@ def check_SRN(SRN):
 
 def init_db():
     models.ElectiveTeachingFaculty.objects.update(student_no=0)
+    with connection.cursor() as cursor:
+        cursor.execute("select * from Student")
+        students = cursor.fetchall()
     students = models.Student.objects.all()
     for student in students:
         if student.EF1:

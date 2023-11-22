@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from website import models
+from django.db.models import Sum
+from django.db import connection
 
 # Create your views here.
 def a_login(request):
@@ -39,22 +41,40 @@ def dashboard(request):
         context = {}
         if e1 != "%":
             e1_m = models.ElectiveTeachingFaculty.objects.filter(E_id=e1)
-            e1_c = models.ElectiveTeachingFaculty.objects.filter(E_id=e1).count()
+            e1_c = models.ElectiveTeachingFaculty.objects.filter(E_id=e1).aggregate(Sum("student_no"))
+            print(e1_c)
             context["e1m"] = e1_m
             context["e1c"] = e1_c
         if e2 != "%":
             e2_m = models.ElectiveTeachingFaculty.objects.filter(E_id=e2)
+            e2_c = models.ElectiveTeachingFaculty.objects.filter(E_id=e2).aggregate(Sum("student_no"))
+            print(e2_c)
             context["e2m"] = e2_m
+            context["e2c"] = e2_c
 
+        with connection.cursor() as cursor:
+            cursor.callproc('EmptyClassrooms')
+            empty_classrooms = cursor.fetchall()
+            empty_classrooms = [room[0] for room in empty_classrooms]
+            print(empty_classrooms)
+
+        context["empty"] = empty_classrooms
         context["e1s"] = models.Elective.objects.filter(E_type=1)
         context["e2s"] = models.Elective.objects.filter(E_type=2)
         context["naughty"] = models.Student.objects.filter(EF1=None,EF2=None)
         return render(request, "adashboard.html", context)
 
+    with connection.cursor() as cursor:
+        cursor.callproc('EmptyClassrooms')
+        empty_classrooms = cursor.fetchall()
+        empty_classrooms = [room[0] for room in empty_classrooms]
+        print(empty_classrooms)
+        #context["empty"] = empty_classrooms
+
     e1s = models.Elective.objects.filter(E_type=1)
     e2s = models.Elective.objects.filter(E_type=2)
     naughty = models.Student.objects.filter(EF1=None,EF2=None)
-    return render(request, "adashboard.html", {"e1s":e1s, "e2s":e2s, "naughty": naughty})
+    return render(request, "adashboard.html", {"e1s":e1s, "e2s":e2s, "naughty": naughty, "empty": empty_classrooms})
 
 def allocate(request):
     efs = models.ElectiveTeachingFaculty.objects.all().order_by("-student_no")
